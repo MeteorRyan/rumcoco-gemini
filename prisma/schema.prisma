@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum Role {
+  OWNER
+  STAFF
+  ACCOUNTANT
+  ADMIN
+}
+
+enum EntityType {
+  LLC
+  CORP
+  SOLE_PROP
+  NON_PROFIT
+}
+
+enum DeadlineStatus {
+  PENDING
+  COMPLETED
+  OVERDUE
+  SKIPPED
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum DeadlineType {
+  TAX
+  FILING
+  LICENSE
+  INTERNAL
+  OTHER
+}
+
+enum RecurrenceInterval {
+  NONE
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+}
+
+enum ReadStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+// Models
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  role         Role     @default(OWNER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  businesses Business[]
+  auditLogs  AuditLog[]
+}
+
+model Business {
+  id            String     @id @default(uuid())
+  name          String
+  entityType    EntityType @default(LLC)
+  formationDate DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  users          User[]
+  deadlines      Deadline[]
+  credentials    Credential[]
+  formationTasks FormationTask[]
+}
+
+model Deadline {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  dueDate     DateTime
+  status      DeadlineStatus @default(PENDING)
+  priority    Priority       @default(MEDIUM)
+  type        DeadlineType   @default(OTHER)
+
+  // Recurrence
+  isRecurring        Boolean            @default(false)
+  recurrenceInterval RecurrenceInterval @default(NONE)
+
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Credential {
+  id                String  @id @default(uuid())
+  serviceName       String
+  encryptedUsername String
+  encryptedPassword String
+  notes             String?
+
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FormationTask {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  isCompleted Boolean @default(false)
+
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id         String              @id @default(uuid())
+  type       NotificationType
+  channel    NotificationChannel
+  readStatus ReadStatus          @default(UNREAD)
+  message    String
+  sentAt     DateTime?
+  createdAt  DateTime            @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  ipAddress String?
+  timestamp DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
