@@ -95,23 +95,6 @@
 2.  **Credential Vault:** Secure storage for EIN, Tax IDs, Banking info.
 3.  **Business Formation Suite:** Checklists for "Getting Legit" (Entity, EIN, Sales Tax).
 4.  **Notifications:** Email/SMS reminders for critical dates.
-
-### Phase 2: Operations & Community
-5.  **RumCoCo Academy:** Micro-courses, quizzes, certificates.
-6.  **Pinellas Business Hub:** Local events map (PostGIS), workshops.
-7.  **HR & Payroll Lite:** Employee DB, time clock, PTO tracking.
-
-### Phase 3: Financial & Advisory (Advanced)
-8.  **Accounting Hub:** Xero integration, financial snapshots, cashflow.
-9.  **Document Room:** Secure tagging, sharing with accountants.
-10. **Workflow Engine:** Internal firm task management.
-11. **M&A Dealflow:** Data rooms, valuation calculators, buyer tracking.
-12. **Banking Layer:** (Long-term) Embedded lending/checking.
-
-## 6. Database Schema (Prisma Requirements) [COMPLETED]
-The schema must support the following core models:
-* `User` (Roles: Owner, Staff, Accountant, Admin)
-* `Business` (Profile, Entity Type, Formation Date)
 * `Deadline` (DueDate, Type, Priority, Status)
 * `Credential` (Encrypted storage fields)
 * `Notification` (Type, ReadStatus, Channel)
